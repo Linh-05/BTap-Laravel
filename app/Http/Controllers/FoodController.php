@@ -13,7 +13,7 @@ class FoodController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Food::with('category');
+        $query = Food::with(['category','detail']);
 
         if ($request->has('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
@@ -47,7 +47,7 @@ class FoodController extends Controller
 
     public function show($id): JsonResponse
     {
-        $food = Food::with('category')->find($id);
+        $food = Food::with(['category','detail'])->find($id);
 
         if (!$food) {
             return response()->json([
@@ -100,6 +100,30 @@ class FoodController extends Controller
 
         return response()->json([
             'message' => 'deleted'
+        ], Response::HTTP_OK);
+    }
+    public function updateDetail(Request $request, $id): JsonResponse
+    {
+        $food = Food::find($id);
+
+        if (!$food) {
+            return response()->json([
+                'message' => 'Not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $food->detail()->updateOrCreate(
+            ['food_id' => $food->id],
+            [
+                'calories'    => $request->input('calories', 0),
+                'ingredients' => $request->input('ingredients'),
+                'allergens'   => $request->input('allergens'),
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Cập nhật dinh dưỡng thành công',
+            'data'    => $food->load('detail')
         ], Response::HTTP_OK);
     }
 }

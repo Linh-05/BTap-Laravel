@@ -44,6 +44,6 @@ class UpdateFoodRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'message' => 'Dữ liệu không hợp lệ',
             'errors'  => $validator->errors()
-        ], Response::HTTP_UNPROCESSABLE_ENTITY)); // HTTP 422
+        ], Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
